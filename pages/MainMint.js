@@ -19,7 +19,10 @@ import stardustGeneration from "../artifacts/contracts/StardustGeneration.sol/St
 const contractAddress = "0x3A6E628f8b6c83cB409c2c67cC42ceeCBA219046";
 
 
-
+const { MerkleTree } = require('merkletreejs')
+const keccak256 = require('keccak256')
+const starlist = require('../scripts/starlist.js')
+const url = process.env.NEXT_PUBLIC_INFURA_KEY;
 
 const providerOptions = {
   coinbasewallet: {
@@ -133,36 +136,83 @@ export default function MainMint() {
 
   // pass in proof? 
   async function handleStarlistMint(provider, mintAmount) {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-      try {
-        const response = await contract.mintStarlist(BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
+    if (!window.ethereum.selectedAddress) {
+      return {
+        success: false,
+        status: 'To be able to mint, you need to connect your wallet'
       }
-    } else {
-      console.log("Please install MetaMask");
+    }
+  
+    const leaf = keccak256(window.ethereum.selectedAddress)
+    const proof = merkleTree.getHexProof(leaf)
+  
+    // Verify Merkle Proof
+    const isValid = merkleTree.verify(proof, leaf, root)
+  
+    if (!isValid) {
+      return {
+        success: false,
+        status: 'Invalid Merkle Proof - You are not on the starlist'
+      }
+    }
+  
+    // avoid replay attacks
+    const nonce = await provider.getTransactionCount(
+      window.ethereum.selectedAddress,
+      'latest'
+    )
+  
+    // Set up our Ethereum transaction
+    const tx = {
+      to: config.contractAddress,
+      from: window.ethereum.selectedAddress,
+      value: parseInt(
+        web3.utils.toWei(String(config.cost * mintAmount), 'ether')
+      ).toString(16), // hex
+      data: nftContract.methods
+        .mintStarlist(window.ethereum.selectedAddress, proof, mintAmount) // window.ethereum.selectedAddress as third param?
+        .encodeABI(),
+      nonce: nonce.toString(16)
+    }
+  
+    try {
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [tx]
+      })
+  
+      return {
+        success: true,
+        status: (
+          <a href={`https://etherscan.io/tx/${txHash}`} target="_blank">
+            <p>✅ Check out your transaction on Etherscan:</p>
+            <p>{`https://etherscan.io/tx/${txHash}`}</p>
+          </a>
+        )
+      }
+    } catch (error) {
+      return {
+        success: false,
+        status: `😞 Oh my, something went wrong: ` + error.message
+      }
     }
   }
 
-  async function handleReservelistMint(provider, mintAmount) {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-      try {
-        const response = await contract.mintReservelist(BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
-      }
-    } else {
-      console.log("Please install MetaMask");
-    }
-  }
+  // async function handleReservelistMint(provider, mintAmount) {
+  //   if (typeof window.ethereum !== "undefined") {
+  //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+  //     try {
+  //       const response = await contract.mintReservelist(BigNumber.from(mintAmount), {
+  //         value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+  //       });
+  //       console.log("response: ", response);
+  //     } catch (err) {
+  //       console.log("error: ", err);
+  //     }
+  //   } else {
+  //     console.log("Please install MetaMask");
+  //   }
+  // }
 
   const handlePublicMint = async (provider, mintAmount) => {
     const web3 = new Web3( provider );
@@ -176,32 +226,46 @@ export default function MainMint() {
     }
     const nftContract = new web3.eth.Contract(contract.abi, config.contractAddress);
 
-    const valueBN = Web3.utils.toBN( Web3.utils.toWei(`${config.cost}`) )
-      .mul( Web3.utils.toBN( `${mintAmount}` ) );
-      console.log(valueBN.toString());
+    // const valueBN = Web3.utils.toBN( Web3.utils.toWei(`${config.cost}`) )
+    //   .mul( Web3.utils.toBN( `${mintAmount}` ) );
+    //   console.log(valueBN.toString());
       
-
-    try {
-      await nftContract.methods.mintPublic( mintAmount ).estimateGas({
-        from: accounts[0],
-        value: valueBN.toString()
-      });
-
-      return {
-        success: true,
-        status: (
-          <a href={`https://etherscan.io/tx/${txHash}`} target="_blank">
-            <p>✅  Check out your transaction on Etherscan:</p>
-            <p>{`https://etherscan.io/tx/${txHash}`}</p>
-          </a>
-        )
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+      try {
+        const response = await contract.mintPublic(BigNumber.from(mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
       }
-    } catch (error) {
-      return {
-        success: false,
-        status: `😞  Oh my, something went wrong` + error.message
-      }
+    } else {
+      console.log("Please install MetaMask");
     }
+
+    // try {
+    //   await nftContract.methods.mintPublic( mintAmount ).estimateGas({
+    //     from: accounts[0],
+    //     value: valueBN.toString()
+    //   });
+
+    //   return {
+    //     success: true,
+    //     status: `Tx went through`
+    //     // status: (
+    //     //   <a href={`https://etherscan.io/tx/${txHash}`} target="_blank">
+    //     //     <p>✅  Check out your transaction on Etherscan:</p>
+    //     //     <p>{`https://etherscan.io/tx/${txHash}`}</p>
+    //     //   </a>
+    //     // )
+    //   }
+    // } catch (error) {
+    //   return {
+    //     success: false,
+    //     status: `😞  Oh my, something went wrong` + error.message
+    //   }
+    // }
 }
     
 

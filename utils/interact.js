@@ -26,7 +26,7 @@ export const getTotalMinted = async (provider) => {
   if (provider) {
     
     const web3Modal = new Web3Modal({
-    network: "mainnet", // optional
+    network: "rinkeby", // optional
     cacheProvider: true, // optional
     providerOptions // required
     });
@@ -53,7 +53,7 @@ export const getMaxSupply = async (provider) => {
     
   }
   const nftContract = new web3.eth.Contract(contract.abi, config.contractAddress);
-  const maxSupply = await nftContract.methods.maxSupply().call()
+  const maxSupply = await nftContract.methods.MAX_SUPPLY().call()
   return maxSupply;
 
 }
