@@ -206,10 +206,11 @@ export default function MainMint() {
       console.log('merkle tree', merkleTree.toString());
       console.log('merkle root', merkleTree.getHexRoot());
       console.log('proof', proof.toString());
+      console.log('proof', typeof(proof));
       console.log('address', account)
 
       try {
-        const response = await contract.mintStarlist((proof, mintAmount), {
+        const response = await contract.mintStarlist(proof, BigNumber.from(mintAmount), {
           value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
         });
         console.log("response: ", response);
