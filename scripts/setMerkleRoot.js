@@ -13,7 +13,7 @@ const starlist = require('./starlist.js')
 async function main() {
   const nftFactory = await hre.ethers.getContractFactory('StardustGeneration')
   const nftContract = await nftFactory.attach(
-    '0x8955a961EbF558E1838adE37A27D938920c8ecf3' // Deployed contract address
+    '0x148f0C3263bfDafce6974256F120f66F8716bbCE' // Deployed contract address
   )
 
   // Re-calculate merkle root from the starlist array.

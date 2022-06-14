@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { useState } from "react";
 // import "../styles/App.css";
 import MainMint from "./MainMint";
@@ -14,6 +14,7 @@ function App() {
     <div className="overlay">
       <div className="App">
         {/* <NavBar accounts={accounts} setAccounts={setAccounts} /> */}
+        {/* <MainMint /> */}
         <MainMint accounts={accounts} setAccounts={setAccounts} />
       </div>
       <div className="background-box">

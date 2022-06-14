@@ -5,7 +5,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
 import stardustGeneration from "../artifacts/contracts/StardustGeneration.sol/StardustGeneration";
-const contractAddress = "0x8955a961EbF558E1838adE37A27D938920c8ecf3";
+const contractAddress = "0x148f0C3263bfDafce6974256F120f66F8716bbCE";
 
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
@@ -32,6 +32,7 @@ export default function MainMint() {
   const [mintAmount, setMintAmount] = useState(1);
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
+  // const [correctNetwork, setCorrectNetwork] = useState(false);
   const [signer, setSigner] = useState(undefined);
   const [provider, setProvider] = useState();
 
@@ -88,6 +89,7 @@ export default function MainMint() {
 		const { ethereum } = window
 		let chainId = await ethereum.request({ method: 'eth_chainId' })
 		console.log('Connected to chain:' + chainId)
+    setChainId(chainId)
 
 		const rinkebyChainId = '0x4'
 
@@ -110,7 +112,7 @@ export default function MainMint() {
   };
 
   const handleIncrement = () => {
-    //for max number of mints this case is 3
+    //for max number of mints this case is 7
     if (mintAmount >= 7) return;
     setMintAmount(mintAmount + 1);
   };
@@ -143,63 +145,52 @@ export default function MainMint() {
     }
   }
 
-  async function handleReservelistMint() {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+  // async function handleReservelistMint() {
+  //   if (typeof window.ethereum !== "undefined") {
+  //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
-      const leafs = starlist.map(addr => keccak256(addr));
-      const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
-      const proof = merkleTree.getHexProof(keccak256(account));
+  //     const leafs = starlist.map(addr => keccak256(addr));
+  //     const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
+  //     const proof = merkleTree.getHexProof(keccak256(account));
 
-      try {
-        const response = await contract.mintReservelist(proof, BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
-      }
-    } else {
-      console.log("Please install MetaMask");
-    }
-  }
+  //     try {
+  //       const response = await contract.mintReservelist(proof, BigNumber.from(mintAmount), {
+  //         value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+  //       });
+  //       console.log("response: ", response);
+  //     } catch (err) {
+  //       console.log("error: ", err);
+  //     }
+  //   } else {
+  //     console.log("Please install MetaMask");
+  //   }
+  // }
 
-  async function handlePublicMint() {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-      try {
-        const response = await contract.mintPublic(BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
-      }
-    } else {
-      console.log("Please install MetaMask");
-    }
-  }
+  // async function handlePublicMint() {
+  //   if (typeof window.ethereum !== "undefined") {
+  //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+  //     try {
+  //       const response = await contract.mintPublic(BigNumber.from(mintAmount), {
+  //         value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+  //       });
+  //       console.log("response: ", response);
+  //     } catch (err) {
+  //       console.log("error: ", err);
+  //     }
+  //   } else {
+  //     console.log("Please install MetaMask");
+  //   }
+  // }
 
   return (
-    // <div className="main-mint">
-    //   {hasMetamask ? (
-    //     isConnected ? (
-    //       <button onClick={disconnectWallet}>Disconnect</button>
-    //     ) : (
-    //       <button onClick={connectWallet}>Connect Wallet</button>
-    //     )
-    //   ) : (
-    //     "Please install metamask"
-    //   )}
-    // </div>
     <>
         <div className="text-center mt-8">
           <div>
           {hasMetamask ? (
             isConnected ? (
-              <button onClick={handleDisconnect}>Disconnect Wallet</button>
+              <button>Connected</button>
             ) : (
-              <button onClick={connectWallet}>Connect Wallet</button>
+              <button onClick={connectWallet}>Connect</button>
             )
           ) : (
             "Please install metamask"
