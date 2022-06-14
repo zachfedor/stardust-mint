@@ -195,7 +195,7 @@ export default function MainMint() {
     }
   }
 
-  async function handleStarlistMint2() {
+  async function handleStarlistMint() {
     if (typeof window.ethereum !== "undefined") {
       const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
@@ -222,22 +222,34 @@ export default function MainMint() {
     }
   }
 
-  const handlePublicMint = async (provider, mintAmount) => {
-    const web3 = new Web3( provider );
-    const accounts = await web3.eth.getAccounts();
+  async function handleReservelistMint() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
-    if (!accounts.length) {
-      return {
-        success: false,
-        status: 'To be able to mint, you need to connect your wallet'
+      const leafs = starlist.map(addr => keccak256(addr));
+      const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
+      const proof = merkleTree.getHexProof(keccak256(account));
+
+      console.log('merkle tree', merkleTree.toString());
+      console.log('merkle root', merkleTree.getHexRoot());
+      console.log('proof', proof.toString());
+      console.log('proof', typeof(proof));
+      console.log('address', account)
+
+      try {
+        const response = await contract.mintReservelist(proof, BigNumber.from(mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
       }
+    } else {
+      console.log("Please install MetaMask");
     }
-    const nftContract = new web3.eth.Contract(contract.abi, config.contractAddress);
+  }
 
-    // const valueBN = Web3.utils.toBN( Web3.utils.toWei(`${config.cost}`) )
-    //   .mul( Web3.utils.toBN( `${mintAmount}` ) );
-    //   console.log(valueBN.toString());
-
+  const handlePublicMint = async (provider, mintAmount) => {
     if (typeof window.ethereum !== "undefined") {
       const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
       try {
@@ -277,6 +289,60 @@ export default function MainMint() {
 }
 
 
+
+// const handlePublicMint = async (provider, mintAmount) => {
+//   const web3 = new Web3( provider );
+//   const accounts = await web3.eth.getAccounts();
+
+//   if (!accounts.length) {
+//     return {
+//       success: false,
+//       status: 'To be able to mint, you need to connect your wallet'
+//     }
+//   }
+//   const nftContract = new web3.eth.Contract(contract.abi, config.contractAddress);
+
+//   // const valueBN = Web3.utils.toBN( Web3.utils.toWei(`${config.cost}`) )
+//   //   .mul( Web3.utils.toBN( `${mintAmount}` ) );
+//   //   console.log(valueBN.toString());
+
+//   if (typeof window.ethereum !== "undefined") {
+//     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+//     try {
+//       const response = await contract.mintPublic(BigNumber.from(mintAmount), {
+//         value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+//       });
+//       console.log("response: ", response);
+//     } catch (err) {
+//       console.log("error: ", err);
+//     }
+//   } else {
+//     console.log("Please install MetaMask");
+//   }
+
+//   // try {
+//   //   await nftContract.methods.mintPublic( mintAmount ).estimateGas({
+//   //     from: accounts[0],
+//   //     value: valueBN.toString()
+//   //   });
+
+//   //   return {
+//   //     success: true,
+//   //     status: `Tx went through`
+//   //     // status: (
+//   //     //   <a href={`https://etherscan.io/tx/${txHash}`} target="_blank">
+//   //     //     <p>✅  Check out your transaction on Etherscan:</p>
+//   //     //     <p>{`https://etherscan.io/tx/${txHash}`}</p>
+//   //     //   </a>
+//   //     // )
+//   //   }
+//   // } catch (error) {
+//   //   return {
+//   //     success: false,
+//   //     status: `😞  Oh my, something went wrong` + error.message
+//   //   }
+//   // }
+// }
   return (
     // <div className="main-mint">
     //   {hasMetamask ? (
@@ -323,7 +389,7 @@ export default function MainMint() {
                 onClick={handleIncrement}
               ></button>
             </div>
-            <button className="mint-button" onClick={handleStarlistMint2}>
+            <button className="mint-button" onClick={handleStarlistMint}>
               {" "}
               MINT
             </button>
