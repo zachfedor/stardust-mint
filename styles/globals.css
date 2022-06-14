@@ -1,0 +1,330 @@
+@import url('https://fonts.googleapis.com/css2?family=Coiny&family=Open+Sans:wght@400;500;600&display=swap');
+@import url("https://use.typekit.net/ofj5wln.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+
+
+/* --clr-light: #f0e9e9;
+--clr-purple: #9b5de5;
+--clr-pink: #f15bb5;
+--clr-yellow: #fee440;
+--clr-blue: #00bbf9;
+--clr-green: #00f5d4;
+--clr-selection-bg: #cb3d92;
+--clr-selection-text: #f4f0f0; */
+
+/* Customize Wallet Modal */
+/* CUSTOMIZE THE COLOR  PALLETTE */
+/* --onboard-white: white;
+--onboard-black: black;
+--onboard-primary-1: #2f80ed;
+--onboard-primary-100: #eff1fc;
+--onboard-primary-200: #d0d4f7;
+--onboard-primary-300: #b1b8f2;
+--onboard-primary-400: #929bed;
+--onboard-primary-500: #6370e5;
+--onboard-primary-600: #454ea0;
+--onboard-primary-700: #323873;
+--onboard-gray-100: #ebebed;
+--onboard-gray-200: #c2c4c9;
+--onboard-gray-300: #999ca5;
+--onboard-gray-400: #707481;
+--onboard-gray-500: #33394b;
+--onboard-gray-600: #242835;
+--onboard-gray-700: #1a1d26;
+--onboard-success-100: #d1fae3;
+--onboard-success-200: #baf7d5;
+--onboard-success-300: #a4f4c6;
+--onboard-success-400: #8df2b8;
+--onboard-success-500: #5aec99;
+--onboard-success-600: #18ce66;
+--onboard-success-700: #129b4d;
+--onboard-danger-100: #ffe5e6;
+--onboard-danger-200: #ffcccc;
+--onboard-danger-300: #ffb3b3;
+--onboard-danger-400: #ff8080;
+--onboard-danger-500: #ff4f4f;
+--onboard-danger-600: #cc0000;
+--onboard-danger-700: #660000;
+--onboard-warning-100: #ffefcc;
+--onboard-warning-200: #ffe7b3;
+--onboard-warning-300: #ffd780;
+--onboard-warning-400: #ffc74c;
+--onboard-warning-500: #ffaf00;
+--onboard-warning-600: #cc8c00;
+--onboard-warning-700: #664600;
+
+  --font-family: 'Open Sans', sans-serif;
+  --clr-light: #f0e9e9;
+  --clr-purple: #9b5de5;
+  --clr-pink: #f15bb5;
+  --clr-yellow: #fee440;
+  --clr-blue: #00bbf9;
+  --clr-green: #00f5d4;
+  --clr-selection-bg: #cb3d92;
+  --clr-selection-text: #f4f0f0;
+  --clr-background: #06070a; */
+
+  /* Customize Wallet Modal */
+  /* CUSTOMIZE THE COLOR  PALLETTE */
+  /* --onboard-white: white;
+  --onboard-black: black;
+  --onboard-primary-1: #2f80ed;
+  --onboard-primary-100: #eff1fc;
+  --onboard-primary-200: #d0d4f7;
+  --onboard-primary-300: #b1b8f2;
+  --onboard-primary-400: #929bed;
+  --onboard-primary-500: #6370e5;
+  --onboard-primary-600: #454ea0;
+  --onboard-primary-700: #323873;
+  --onboard-gray-100: #ebebed;
+  --onboard-gray-200: #c2c4c9;
+  --onboard-gray-300: #999ca5;
+  --onboard-gray-400: #707481;
+  --onboard-gray-500: #33394b;
+  --onboard-gray-600: #242835;
+  --onboard-gray-700: #1a1d26;
+  --onboard-success-100: #d1fae3;
+  --onboard-success-200: #baf7d5;
+  --onboard-success-300: #a4f4c6;
+  --onboard-success-400: #8df2b8;
+  --onboard-success-500: #5aec99;
+  --onboard-success-600: #18ce66;
+  --onboard-success-700: #129b4d;
+  --onboard-danger-100: #ffe5e6;
+  --onboard-danger-200: #ffcccc;
+  --onboard-danger-300: #ffb3b3;
+  --onboard-danger-400: #ff8080;
+  --onboard-danger-500: #ff4f4f;
+  --onboard-danger-600: #cc0000;
+  --onboard-danger-700: #660000;
+  --onboard-warning-100: #ffefcc;
+  --onboard-warning-200: #ffe7b3;
+  --onboard-warning-300: #ffd780;
+  --onboard-warning-400: #ffc74c;
+  --onboard-warning-500: #ffaf00;
+  --onboard-warning-600: #cc8c00;
+  --onboard-warning-700: #664600;
+
+  --font-family: 'hwt-artz', sans;
+  --clr-yellow: #FAE2D4;
+  --clr-yelpink: #FAE2D4;
+  --clr-pink: #EAA3C1;
+  --clr-blue-txt: #3F83C0;
+  --clr-blue: #B2EDFE;
+  --clr-orange: #E6C178;
+  --clr-white: #FFFFFF;
+  --clr-green: #AFD470;
+  --clr-gray: #E7E7E7;
+  --clr-purple: #D6D4EE;
+  --clr-background: #F1CDDE;
+  --clr-selection-bg: #FFFFFF;
+  --clr-selection-txt: #B2EDFE; */
+  /* --font-family: 'Open Sans', sans-serif; */
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-family);
+  background: var(--clr-background);
+}
+
+::selection {
+  background: var(--clr-selection-bg);
+  color: var(--clr-selection-text);
+}
+
+@font-face {
+  font-family: "TanSpring";
+  src: url(fonts/TAN-SPRING.woff);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0px 0px 0px 0px;
+}
+
+body {
+  overflow: hidden;
+  background-color: #cdcdff;
+}
+
+.App {
+  font-family: "TanSpring";
+  background-image: url("../public/images/background/background.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 960px;
+  height: 707.5px;
+  border-radius: 8%;
+  margin: auto;
+  box-shadow: 0 0 4.75rem #c02b2b;
+}
+
+@media (max-width: 960px) {
+  .App {
+    background-image: url("../public/images/background/background-mobile.png");
+    width: 100%;
+    height: 100%;
+    border-radius: 0%;
+    box-shadow: 0 0 0 crimson;
+  }
+}
+
+.App * {
+  position: relative;
+}
+
+.overlay {
+  padding: 0px;
+  margin: auto;
+  margin-top: 5%;
+  height: 100vh;
+}
+
+@media (max-width: 960px) {
+  .overlay {
+    margin-top: 0%;
+  }
+}
+
+.nav-bar {
+  padding: 1em;
+}
+
+.connected {
+  font-weight: 800;
+  color: #c85c22;
+  font-size: 2rem;
+  position: absolute;
+  margin-top: 5%;
+  margin-left: 14%;
+}
+
+@media (max-width: 960px) {
+  .connected {
+    margin-left: 8vw;
+    margin-top: 26vh;
+    font-size: 5vw;
+  }
+}
+
+.connect-button {
+  background-color: #c85c22;
+  border: none;
+  border-radius: 8px;
+  color: #cdcdff;
+  padding: 8px 5px 5px 5px;
+  font-family: "TanSpring";
+  font-weight: 800;
+  font-size: 2rem;
+  margin-top: 5%;
+  margin-left: 14%;
+  position: absolute;
+}
+
+.connect-button:hover {
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .connect-button {
+    margin-left: 10vw;
+    margin-top: 21vh;
+    font-size: 4vw;
+  }
+}
+
+.mint-button {
+  background-color: #c85c22;
+  border: none;
+  border-radius: 8px;
+  color: #cdcdff;
+  padding: 8px 5px 5px 5px;
+  font-family: "TanSpring";
+  font-weight: 800;
+  font-size: 3rem;
+  position: absolute;
+  margin-left: 68.4%;
+  margin-top: 17.5%;
+}
+
+.mint-button:hover {
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .mint-button {
+    margin-left: 68vw;
+    margin-top: 38vh;
+    font-size: 5vw;
+  }
+}
+
+.counter {
+  position: absolute;
+  margin-left: 60.75%;
+  margin-top: 35.65%;
+}
+
+.decrement-btn {
+  background-image: url("../public/images/buttons/counter-left.png");
+  background-position: center;
+  background-size: 100%;
+  border: none;
+  padding: 20px;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  padding-top: 78px;
+}
+.increment-btn {
+  background-image: url("../public/images/buttons/counter-right.png");
+  background-position: center;
+  background-size: 100%;
+  border: none;
+  padding: 20px;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  padding-top: 78px;
+}
+
+.input {
+  background-image: url("../public/images/buttons/counter-box.png");
+  font-family: "TanSpring";
+  color: #c85c22;
+  font-size: 5rem;
+  background-position: center;
+  background-size: 100%;
+  border: none;
+  padding: 0px;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  width: 200px;
+  height: 200px;
+  padding: 11px 0px 0px 75px;
+  -webkit-appearance: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 960px) {
+  .input {
+    margin-left: auto;
+    margin-top: 17vh;
+    font-size: 5vw;
+    width: 20vw;
+    height: 20vh;
+  }
+}
