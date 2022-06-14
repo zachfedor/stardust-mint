@@ -131,7 +131,40 @@ export default function MainMint() {
     setNetwork("");
   };
 
-  const mintPublic = async (provider, mintAmount) => {
+  // pass in proof? 
+  async function handleStarlistMint(provider, mintAmount) {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+      try {
+        const response = await contract.mintStarlist(BigNumber.from(mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+  }
+
+  async function handleReservelistMint(provider, mintAmount) {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+      try {
+        const response = await contract.mintReservelist(BigNumber.from(mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+  }
+
+  const handlePublicMint = async (provider, mintAmount) => {
     const web3 = new Web3( provider );
     const accounts = await web3.eth.getAccounts();
 
@@ -149,11 +182,7 @@ export default function MainMint() {
       
 
     try {
-      await nftContract.methods.mint( mintAmount ).estimateGas({
-        from: accounts[0],
-        value: valueBN.toString()
-      });
-      await nftContract.methods.mint( mintAmount ).send({
+      await nftContract.methods.mintPublic( mintAmount ).estimateGas({
         from: accounts[0],
         value: valueBN.toString()
       });
@@ -174,37 +203,6 @@ export default function MainMint() {
       }
     }
 }
-  async function handleStarlistMint() {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-      try {
-        const response = await contract.mintStarlist(BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
-      }
-    } else {
-      console.log("Please install MetaMask");
-    }
-  }
-
-  async function handlePublicMint() {
-    if (typeof window.ethereum !== "undefined") {
-      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-      try {
-        const response = await contract.mintPublic(BigNumber.from(mintAmount), {
-          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-        });
-        console.log("response: ", response);
-      } catch (err) {
-        console.log("error: ", err);
-      }
-    } else {
-      console.log("Please install MetaMask");
-    }
-  }
     
 
   return (
@@ -253,7 +251,7 @@ export default function MainMint() {
                 onClick={handleIncrement}
               ></button>
             </div>
-            <button className="mint-button" onClick={handleStarlistMint}>
+            <button className="mint-button" onClick={handlePublicMint}>
               {" "}
               MINT
             </button>
