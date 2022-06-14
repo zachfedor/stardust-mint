@@ -12,19 +12,19 @@ const keccak256 = require('keccak256')
 const starlist = require('../scripts/starlist.js')
 
 const providerOptions = {
-  coinbasewallet: {
-    package: CoinbaseWalletSDK,
-    options: {
-      appName: "Stardust Generation",
-      infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
-    }
-  },
-  walletconnect: {
-    package: WalletConnectProvider, // required
-    options: {
-      rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
-    },
-  },
+  // coinbasewallet: {
+  //   package: CoinbaseWalletSDK,
+  //   options: {
+  //     appName: "Stardust Generation",
+  //     infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
+  //   }
+  // },
+  // walletconnect: {
+  //   package: WalletConnectProvider, // required
+  //   options: {
+  //     rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
+  //   },
+  // },
 };
 
 
@@ -41,14 +41,16 @@ export default function MainMint() {
   const [chainId, setChainId] = useState();
   const [network, setNetwork] = useState();
 
-  let web3Modal
-  if (typeof window !== 'undefined') {
-    web3Modal = new Web3Modal({
-      network: 'rinkeby', // optional
-      cacheProvider: true,
-      providerOptions, // required
-    })
-  }
+  const [web3Modal, setWeb3Modal] = useState();
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWeb3Modal(new Web3Modal({
+        network: 'rinkeby', // optional
+        cacheProvider: false,
+        providerOptions, // required
+      }));
+    }
+  }, []);
 
   useEffect(() => {
     if (provider !== "undefined") {
@@ -56,7 +58,7 @@ export default function MainMint() {
     }
   });
 
-	const connectWallet = async () => {
+  const connectWallet = async () => {
 		try {
 			const { ethereum } = window
 
@@ -64,17 +66,16 @@ export default function MainMint() {
 				console.log('Metamask not detected')
 				return
 			}
-			let chainId = await ethereum.request({ method: 'eth_chainId'})
-			console.log('Connected to chain:' + chainId)
+      const instance = await web3Modal.connect();
 
-			const rinkebyChainId = '0x4'
-      const web3ModalProvider = await web3Modal.connect();
-			if (chainId !== rinkebyChainId) {
-				alert('You are not connected to the Rinkeby Testnet!')
-				return
-			}
-			const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
-      const provider = new ethers.providers.Web3Provider(web3ModalProvider);
+      const provider = new ethers.providers.Web3Provider(instance);
+      const signer = provider.getSigner();
+
+      // let chainId = await ethereum.request({ method: 'eth_chainId'})
+			// console.log('Connected to chain:' + chainId)
+
+      const accounts = await provider.send("eth_requestAccounts", []);
+
       setSigner(provider.getSigner());
 			console.log('Found account', accounts[0])
 			setAccount(accounts[0])
