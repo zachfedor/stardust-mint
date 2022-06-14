@@ -8,7 +8,7 @@
 const hre = require('hardhat')
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
-const starlist = require('../starlist.js')
+const starlist = require('./starlist.js')
 
 async function main() {
   const nftFactory = await hre.ethers.getContractFactory('StardustGeneration')
