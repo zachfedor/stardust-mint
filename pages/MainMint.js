@@ -47,7 +47,7 @@ export default function MainMint() {
     if (typeof window !== 'undefined') {
       setWeb3Modal(new Web3Modal({
         network: 'rinkeby', // optional
-        cacheProvider: true,
+        cacheProvider: false,
         providerOptions, // required
       }));
     }
@@ -68,7 +68,8 @@ export default function MainMint() {
     }
   });
 
-	const connectWallet = async () => {
+
+  const connectWallet = async () => {
 		try {
 			const { ethereum } = window
 
@@ -76,19 +77,17 @@ export default function MainMint() {
 				console.log('Metamask not detected')
 				return
 			}
-			// let chainId = '0x4'
+      const instance = await web3Modal.connect();
 
-			const rinkebyChainId = '0x4'
-      const web3ModalProvider = await web3Modal.connect();
-			let chainId = await web3ModalProvider.request()
-			if (chainId !== rinkebyChainId) {
-				alert('You are not connected to the Rinkeby Testnet!')
-				return
+      const provider = new ethers.providers.Web3Provider(instance);
+      const signer = provider.getSigner();
+
+      let chainId = await ethereum.request({ method: 'eth_chainId'})
 			console.log('Connected to chain:' + chainId)
-
-			}
-			const accounts = await web3ModalProvider.request() // pass in provider array or alert for disabling additional wallets
-      const provider = new ethers.providers.Web3Provider(web3ModalProvider);
+      
+		
+			const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+    
       setSigner(provider.getSigner());
 			console.log('Found account', accounts[0])
 			setAccount(accounts[0])
@@ -97,6 +96,37 @@ export default function MainMint() {
 			console.log('Error connecting to metamask', error)
 		}
 	}
+
+
+	// const connectWallet = async () => {
+	// 	try {
+	// 		const { ethereum } = window
+
+	// 		if (!ethereum) {
+	// 			console.log('Metamask not detected')
+	// 			return
+	// 		}
+	// 		// let chainId = '0x4'
+
+	// 		const rinkebyChainId = '0x4'
+  //     const web3ModalProvider = await web3Modal.connect();
+	// 		// let chainId = await web3ModalProvider.request()
+	// 		// if (chainId !== rinkebyChainId) {
+	// 		// 	alert('You are not connected to the Rinkeby Testnet!')
+	// 		// 	return
+	// 		// console.log('Connected to chain:' + chainId)
+
+	// 		// }
+	// 		const accounts = await web3ModalProvider.request() // pass in provider array or alert for disabling additional wallets
+  //     const provider = new ethers.providers.Web3Provider(web3ModalProvider);
+  //     setSigner(provider.getSigner());
+	// 		console.log('Found account', accounts[0])
+	// 		setAccount(accounts[0])
+  //     setIsConnected(true)
+	// 	} catch (error) {
+	// 		console.log('Error connecting to metamask', error)
+	// 	}
+	// }
 
 	// Checks if wallet is connected to the correct network
 	const checkCorrectNetwork = async () => {

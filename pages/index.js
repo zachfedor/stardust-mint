@@ -8,14 +8,14 @@ import MainMint from "./MainMint";
 // import img1 from "../public/images/background/background-button.png";
 
 function App() {
-  const [accounts, setAccounts] = useState([]);
+  // const [accounts, setAccounts] = useState([]);
 
   return (
     <div className="overlay">
       <div className="App">
         {/* <NavBar accounts={accounts} setAccounts={setAccounts} /> */}
-        {/* <MainMint /> */}
-        <MainMint accounts={accounts} setAccounts={setAccounts} />
+        <MainMint />
+        {/* <MainMint accounts={accounts} setAccounts={setAccounts} /> */}
       </div>
       <div className="background-box">
         {/* <img width="1500" src={img1}></img> */}
