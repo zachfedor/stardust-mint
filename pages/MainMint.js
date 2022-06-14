@@ -2,7 +2,7 @@ import Web3Modal from "web3modal";
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
+// import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
 import stardustGeneration from "../artifacts/contracts/StardustGeneration.sol/StardustGeneration";
 const contractAddress = "0x148f0C3263bfDafce6974256F120f66F8716bbCE";
@@ -12,17 +12,17 @@ const keccak256 = require('keccak256')
 const starlist = require('../scripts/starlist.js')
 
 const providerOptions = {
-  coinbasewallet: {
-    package: CoinbaseWalletSDK,
-    options: {
-      appName: "Stardust Generation",
-      infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
-    }
-  },
+  // coinbasewallet: {
+  //   package: CoinbaseWalletSDK,
+  //   options: {
+  //     appName: "Stardust Generation",
+  //     infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
+  //   }
+  // },
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
-      rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
+      rpc: { 42: process.env.NEXT_PUBLIC_INFURA_KEY }, // required
     },
   },
 };
