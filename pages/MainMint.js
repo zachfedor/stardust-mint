@@ -1,5 +1,3 @@
-import { providers } from 'ethers'
-import { toHex, truncateAddress } from "../utils/format.js";
 import Web3Modal from "web3modal";
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
@@ -145,18 +143,28 @@ export default function MainMint() {
     }
   }
 
-  const handlePublicMint = async (provider, mintAmount) => {
-    const web3 = new Web3( provider );
-    const accounts = await web3.eth.getAccounts();
+  async function handleReservelistMint() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
-    if (!accounts.length) {
-      return {
-        success: false,
-        status: 'To be able to mint, you need to connect your wallet'
+      const leafs = starlist.map(addr => keccak256(addr));
+      const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
+      const proof = merkleTree.getHexProof(keccak256(account));
+
+      try {
+        const response = await contract.mintReservelist(proof, BigNumber.from(mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
       }
+    } else {
+      console.log("Please install MetaMask");
     }
-    const nftContract = new web3.eth.Contract(contract.abi, config.contractAddress);
+  }
 
+  async function handlePublicMint() {
     if (typeof window.ethereum !== "undefined") {
       const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
       try {
@@ -213,7 +221,6 @@ export default function MainMint() {
               ></button>
             </div>
             <button className="mint-button" onClick={handleStarlistMint}>
-              {" "}
               MINT
             </button>
           </div>
