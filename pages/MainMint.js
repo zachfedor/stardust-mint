@@ -16,8 +16,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
 import stardustGeneration from "../artifacts/contracts/StardustGeneration.sol/StardustGeneration";
-const contractAddress = "0x3A6E628f8b6c83cB409c2c67cC42ceeCBA219046";
-
+const contractAddress = "0x8955a961EbF558E1838adE37A27D938920c8ecf3";
 
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
@@ -26,10 +25,10 @@ const url = process.env.NEXT_PUBLIC_INFURA_KEY;
 
 const providerOptions = {
   coinbasewallet: {
-    package: CoinbaseWalletSDK, 
+    package: CoinbaseWalletSDK,
     options: {
       appName: "Stardust Generation",
-      infuraId: process.env.NEXT_PUBLIC_INFURA_KEY 
+      infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
     }
   },
   walletconnect: {
@@ -134,7 +133,7 @@ export default function MainMint() {
     setNetwork("");
   };
 
-  // pass in proof? 
+  // pass in proof?
   async function handleStarlistMint(provider, mintAmount) {
     if (!window.ethereum.selectedAddress) {
       return {
@@ -142,45 +141,43 @@ export default function MainMint() {
         status: 'To be able to mint, you need to connect your wallet'
       }
     }
-  
-    const leaf = keccak256(window.ethereum.selectedAddress)
-    const proof = merkleTree.getHexProof(leaf)
-  
+
+
+    const leafs = starlist.map(addr => keccak256(addr));
+    const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
+    const proof = merkleTree.getHexProof(keccak256(account));
+
+    console.log('merkle tree', merkleTree.toString());
+    console.log('merkle root', merkleTree.getHexRoot());
+    console.log('proof', proof.toString());
+
     // Verify Merkle Proof
-    const isValid = merkleTree.verify(proof, leaf, root)
-  
+    // const isValid = merkleTree.verify(proof, leafs, root)
+    const isValid = true
+
     if (!isValid) {
       return {
         success: false,
         status: 'Invalid Merkle Proof - You are not on the starlist'
       }
     }
-  
-    // avoid replay attacks
-    const nonce = await provider.getTransactionCount(
-      window.ethereum.selectedAddress,
-      'latest'
-    )
-  
+
     // Set up our Ethereum transaction
     const tx = {
-      to: config.contractAddress,
-      from: window.ethereum.selectedAddress,
-      value: parseInt(
-        web3.utils.toWei(String(config.cost * mintAmount), 'ether')
-      ).toString(16), // hex
+      to: '0x8955a961EbF558E1838adE37A27D938920c8ecf3',
+      from: account,
+      value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
       data: nftContract.methods
-        .mintStarlist(window.ethereum.selectedAddress, proof, mintAmount) // window.ethereum.selectedAddress as third param?
-        .encodeABI(),
-      nonce: nonce.toString(16)
+        .mintStarlist(proof, mintAmount) // window.ethereum.selectedAddress as third param?
+        .encodeABI()
     }
-  
+
     try {
       const txHash = await window.ethereum.request({
         method: 'eth_sendTransaction',
         params: [tx]
       })
-  
+
       return {
         success: true,
         status: (
@@ -198,21 +195,31 @@ export default function MainMint() {
     }
   }
 
-  // async function handleReservelistMint(provider, mintAmount) {
-  //   if (typeof window.ethereum !== "undefined") {
-  //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
-  //     try {
-  //       const response = await contract.mintReservelist(BigNumber.from(mintAmount), {
-  //         value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
-  //       });
-  //       console.log("response: ", response);
-  //     } catch (err) {
-  //       console.log("error: ", err);
-  //     }
-  //   } else {
-  //     console.log("Please install MetaMask");
-  //   }
-  // }
+  async function handleStarlistMint2() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
+
+      const leafs = starlist.map(addr => keccak256(addr));
+      const merkleTree = new MerkleTree(leafs, keccak256, {sortPairs: true});
+      const proof = merkleTree.getHexProof(keccak256(account));
+
+      console.log('merkle tree', merkleTree.toString());
+      console.log('merkle root', merkleTree.getHexRoot());
+      console.log('proof', proof.toString());
+      console.log('address', account)
+
+      try {
+        const response = await contract.mintStarlist((proof, mintAmount), {
+          value: ethers.utils.parseEther((0.04 * mintAmount).toString()),
+        });
+        console.log("response: ", response);
+      } catch (err) {
+        console.log("error: ", err);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+  }
 
   const handlePublicMint = async (provider, mintAmount) => {
     const web3 = new Web3( provider );
@@ -229,7 +236,7 @@ export default function MainMint() {
     // const valueBN = Web3.utils.toBN( Web3.utils.toWei(`${config.cost}`) )
     //   .mul( Web3.utils.toBN( `${mintAmount}` ) );
     //   console.log(valueBN.toString());
-      
+
     if (typeof window.ethereum !== "undefined") {
       const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
       try {
@@ -267,7 +274,7 @@ export default function MainMint() {
     //   }
     // }
 }
-    
+
 
   return (
     // <div className="main-mint">
@@ -281,7 +288,7 @@ export default function MainMint() {
     //     "Please install metamask"
     //   )}
 
-  
+
     // </div>
     <>
         <div className="text-center mt-8">
@@ -315,7 +322,7 @@ export default function MainMint() {
                 onClick={handleIncrement}
               ></button>
             </div>
-            <button className="mint-button" onClick={handlePublicMint}>
+            <button className="mint-button" onClick={handleStarlistMint2}>
               {" "}
               MINT
             </button>
@@ -376,7 +383,7 @@ export default function MainMint() {
 //       console.log(" error", error);
 //     }
 //   };
-  
+
 //   const disconnect = async () => {
 //     await web3Modal.clearCachedProvider();
 //     refreshState();
@@ -387,17 +394,17 @@ export default function MainMint() {
 //       network: "rinkeby",
 //       providerOptions: {
 //         coinbasewallet: {
-//           package: CoinbaseWalletSDK, 
+//           package: CoinbaseWalletSDK,
 //           options: {
 //             appName: "Stardust Generation",
-//             infuraId: process.env.NEXT_PUBLIC_INFURA_KEY 
+//             infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
 //           }
 //         },
 //         walletconnect: {
-//           package: WalletConnect, 
+//           package: WalletConnect,
 //           options: {
-//             infuraId: process.env.NEXT_PUBLIC_INFURA_KEY 
-//           } 
+//             infuraId: process.env.NEXT_PUBLIC_INFURA_KEY
+//           }
 //         }
 //       },
 //     });
@@ -484,14 +491,14 @@ export default function MainMint() {
 // //   //   network: "mainnet", // optional
 // //   //   cacheProvider: true, // optional
 // //   //   providerOptions // required
-  
+
 // //     network: "rinkeby", // optional
 // //     cacheProvider: true, // optional
 // //     providerOptions // required
 // //   });
-  
+
 // //   const instance = await web3Modal.connect();
-  
+
 // //   const provider = new ethers.providers.Web3Provider(instance);
 // //   const signer = provider.getSigner();
 
@@ -506,7 +513,7 @@ export default function MainMint() {
 // //   const [message, setMessage] = useState("");
 // //   const [signedMessage, setSignedMessage] = useState("");
 // //   const [verified, setVerified] = useState();
-  
+
 
 // //   const connectWallet = async () => {
 // //     try {
@@ -601,7 +608,7 @@ export default function MainMint() {
 // //   }, []);
 
 // //   useEffect(() => {
-    
+
 // //     if (provider?.on) {
 // //       const handleAccountsChanged = (accounts) => {
 // //         console.log("accountsChanged", accounts);
@@ -646,7 +653,7 @@ export default function MainMint() {
 // //           </div>
 // //           <p>{`Network ID: ${chainId ? chainId : "No Network"}`}</p>
 // //         </div>
-       
+
 // //     </>
 // //   );
 // // }
