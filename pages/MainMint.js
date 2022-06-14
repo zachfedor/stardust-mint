@@ -22,10 +22,11 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
-      rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
+      rpc: { 42: process.env.NEXT_PUBLIC_INFURA_KEY }, // required
     },
   },
 };
+
 
 
 export default function MainMint() {
@@ -40,15 +41,26 @@ export default function MainMint() {
   const [error, setError] = useState("");
   const [chainId, setChainId] = useState();
   const [network, setNetwork] = useState();
+  const [web3Modal, setWeb3Modal] = useState();
 
-  let web3Modal
-  if (typeof window !== 'undefined') {
-    web3Modal = new Web3Modal({
-      network: 'rinkeby', // optional
-      cacheProvider: true,
-      providerOptions, // required
-    })
-  }
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWeb3Modal(new Web3Modal({
+        network: 'rinkeby', // optional
+        cacheProvider: true,
+        providerOptions, // required
+      }));
+    }
+  }, []);
+
+  // // let web3Modal
+  // if (typeof window !== 'undefined') {
+  //   web3Modal = new Web3Modal({
+  //     network: 'rinkeby', // optional
+  //     cacheProvider: true,
+  //     providerOptions, // required
+  //   })
+  // }
 
   useEffect(() => {
     if (provider !== "undefined") {
@@ -64,16 +76,18 @@ export default function MainMint() {
 				console.log('Metamask not detected')
 				return
 			}
-			let chainId = await ethereum.request({ method: 'eth_chainId'})
-			console.log('Connected to chain:' + chainId)
+			// let chainId = '0x4'
 
 			const rinkebyChainId = '0x4'
       const web3ModalProvider = await web3Modal.connect();
+			let chainId = await web3ModalProvider.request()
 			if (chainId !== rinkebyChainId) {
 				alert('You are not connected to the Rinkeby Testnet!')
 				return
+			console.log('Connected to chain:' + chainId)
+
 			}
-			const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+			const accounts = await web3ModalProvider.request() // pass in provider array or alert for disabling additional wallets
       const provider = new ethers.providers.Web3Provider(web3ModalProvider);
       setSigner(provider.getSigner());
 			console.log('Found account', accounts[0])
@@ -87,7 +101,7 @@ export default function MainMint() {
 	// Checks if wallet is connected to the correct network
 	const checkCorrectNetwork = async () => {
 		const { ethereum } = window
-		let chainId = await ethereum.request({ method: 'eth_chainId' })
+		let chainId = await web3ModalProvider.request()
 		console.log('Connected to chain:' + chainId)
     setChainId(chainId)
 
@@ -125,7 +139,7 @@ export default function MainMint() {
   };
 
   async function handleStarlistMint() {
-    if (typeof window.ethereum !== "undefined") {
+    if (isConnected === true) {
       const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
       const leafs = starlist.map(addr => keccak256(addr));
@@ -146,7 +160,7 @@ export default function MainMint() {
   }
 
   // async function handleReservelistMint() {
-  //   if (typeof window.ethereum !== "undefined") {
+  //   if (isConnected === true) {
   //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
 
   //     const leafs = starlist.map(addr => keccak256(addr));
@@ -167,7 +181,7 @@ export default function MainMint() {
   // }
 
   // async function handlePublicMint() {
-  //   if (typeof window.ethereum !== "undefined") {
+  //   if (isConnected === true) {
   //     const contract = new ethers.Contract(contractAddress, stardustGeneration.abi, signer);
   //     try {
   //       const response = await contract.mintPublic(BigNumber.from(mintAmount), {
