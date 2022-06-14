@@ -13,7 +13,7 @@ module.exports = {
   networks: {
     hardhat: {},
     // mainnet: {
-    //   url: `${process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL}`,
+    //   url: `${process.env.NEXT_PUBLIC_INFURA_KEY}`,
     //   accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`]
     // },
     rinkeby: {

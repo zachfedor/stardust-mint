@@ -1,7 +1,7 @@
 const config = {
   title: 'Stardust Generation',
   description: 'We are all made of stardust.',
-  contractAddress: '0x8955a961EbF558E1838adE37A27D938920c8ecf3',
+  contractAddress: '0x148f0C3263bfDafce6974256F120f66F8716bbCE',
   Name: 'Stardust Generation',
   Symbol: 'STRDST',
   MAX_STARLIST: 7,
