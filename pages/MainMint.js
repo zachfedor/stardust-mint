@@ -79,16 +79,17 @@ export default function MainMint() {
 			console.log('Connected to chain:' + chainId)
 
 			const rinkebyChainId = '0x4'
-
+      const web3ModalProvider = await web3Modal.connect();
 			if (chainId !== rinkebyChainId) {
 				alert('You are not connected to the Rinkeby Testnet!')
 				return
 			}
-
 			const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
-
+      const provider = new ethers.providers.Web3Provider(web3ModalProvider);
+      setSigner(provider.getSigner());
 			console.log('Found account', accounts[0])
 			setAccount(accounts[0])
+      setIsConnected(true)
 		} catch (error) {
 			console.log('Error connecting to metamask', error)
 		}
